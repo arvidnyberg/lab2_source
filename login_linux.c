@@ -54,6 +54,7 @@ int main(int argc, char *argv[]) {
 
 		if (fgets(user, LENGTH, stdin) == NULL)
 			exit(0);
+		user[strcspn(user, "\n")] = 0;
 
 		/* check to see if important variable is intact after input of login name - do not remove */
 		printf("Value of variable 'important 1' after input of login name: %*.*s\n",
@@ -61,7 +62,6 @@ int main(int argc, char *argv[]) {
 		printf("Value of variable 'important 2' after input of login name: %*.*s\n",
 		 		LENGTH - 1, LENGTH - 1, important2);
 
-		user[strcspn(user, "\n")] = 0;
 		user_pass = getpass(prompt);
 		passwddata = mygetpwnam(user);
 
