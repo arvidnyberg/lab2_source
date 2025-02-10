@@ -26,6 +26,10 @@ void sighandler() {
 
 int main(int argc, char *argv[]) {
 
+	signal(SIGINT, SIG_IGN);
+	signal(SIGQUIT, SIG_IGN);
+	signal(SIGTSTP, SIG_IGN);
+		
 	// struct passwd *passwddata; /* this has to be redefined in step 2 */
 	mypwent *passwddata; /* correct line from step 2 */
 
@@ -95,6 +99,11 @@ int main(int argc, char *argv[]) {
 
 				/*  check UID, see setuid(2) */
 				/*  start a shell, use execve(2) */
+
+				// execve("su", "-s", user);
+
+				// char *args[] = {"su", "-s",};
+				// char *env_args[] = {"/bin/sh"};
 
 			} else {	
 				/* increment the number of failed attempts in the password database */
