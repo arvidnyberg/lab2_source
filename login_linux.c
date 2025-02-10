@@ -27,7 +27,7 @@ void sighandler() {
 int main(int argc, char *argv[]) {
 
 	// struct passwd *passwddata; /* this has to be redefined in step 2 */
-	mypwent *passwddata; // correct line from step 2
+	mypwent *passwddata; /* correct line from step 2 */
 
 	char important1[LENGTH] = "**IMPORTANT 1**";
 
@@ -64,21 +64,45 @@ int main(int argc, char *argv[]) {
 
 		user_pass = getpass(prompt);
 		passwddata = mygetpwnam(user);
+		
+		if (passwddata->pwage > 5){
+			printf("Password age exceeded 5 please change your password!\n");
+			/* TODO actual change password function? */
+		}
 
-		if (passwddata != NULL) {
+		/* Prevention of repeated online password guesses */
+		if (passwddata->pwfailed % 2 == 1){
+			sleep(30);
+			/* TODO: Stricter security for repeated attempts, e.g multiply sleep time by 2 for each sleepcycle??*/
+		}
+
+		if (passwddata != NULL)
+		 {
 			/* You have to encrypt user_pass for this to work */
 			/* Don't forget to include the salt */
-
-			if (!strcmp(user_pass, passwddata->passwd)) {
+			char *encrypted_pass = crypt(user_pass, passwddata->passwd_salt);
+			if (encrypted_pass!=NULL && strcmp(encrypted_pass, passwddata->passwd)==0) {
 
 				printf(" You're in !\n");
+				/* if login is successful increment pwage */
+				passwddata->pwage++;
+				mysetpwent(user, passwddata);
+
+				/* also print and reset the number of failed attempts */
+				printf("Number of failed attempts: %d\n", passwddata->pwfailed);
+				passwddata->pwfailed = 0;
+				mysetpwent(user, passwddata);
 
 				/*  check UID, see setuid(2) */
 				/*  start a shell, use execve(2) */
 
+			} else {	
+				/* increment the number of failed attempts in the password database */
+				passwddata->pwfailed++;
+				mysetpwent(user, passwddata);
 			}
 		}
-		printf("Login Incorrect \n");
+		printf("Login Incorrect \n"); /* TODO: this should not be printed upon successful attempts */
 	}
 	return 0;
 }
