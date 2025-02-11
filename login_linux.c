@@ -96,14 +96,13 @@ int main(int argc, char *argv[]) {
 				printf("Number of failed attempts: %d\n", passwddata->pwfailed);
 				passwddata->pwfailed = 0;
 				mysetpwent(user, passwddata);
-
+				
 				/*  check UID, see setuid(2) */
 				/*  start a shell, use execve(2) */
 
-				// execve("su", "-s", user);
-
-				// char *args[] = {"su", "-s",};
-				// char *env_args[] = {"/bin/sh"};
+				int uid = passwddata->uid;
+				setuid(uid);
+				execve("/bin/sh", NULL, NULL);
 
 			} else {	
 				/* increment the number of failed attempts in the password database */
