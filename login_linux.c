@@ -76,7 +76,7 @@ int main(int argc, char *argv[]) {
 
 		/* Prevention of repeated online password guesses */
 		if (passwddata->pwfailed % 2 == 1){
-			sleep(30);
+			sleep(passwddata->pwfailed * 20);
 			/* TODO: Stricter security for repeated attempts, e.g multiply sleep time by 2 for each sleepcycle??*/
 		}
 
@@ -100,9 +100,12 @@ int main(int argc, char *argv[]) {
 				/*  check UID, see setuid(2) */
 				/*  start a shell, use execve(2) */
 
-				int uid = passwddata->uid;
-				setuid(uid);
-				execve("/bin/sh", NULL, NULL);
+				if (setuid(passwddata->uid) == 0)
+					execve("/bin/sh", NULL, NULL);
+				else {
+					perror("setuid() failed");
+					return 1;
+				}
 
 			} else {	
 				/* increment the number of failed attempts in the password database */
